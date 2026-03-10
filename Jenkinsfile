@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-    tools { 
+    tools {
         maven 'Maven_3_8_4'
     }
 
@@ -15,7 +15,7 @@ pipeline {
                     -Dsonar.projectKey=webappdevsecproject \
                     -Dsonar.organization=webappdevsecproject \
                     -Dsonar.host.url=https://sonarcloud.io \
-                    -Dsonar.login=$SONAR_TOKEN
+                    -Dsonar.token=$SONAR_TOKEN
                     '''
                 }
             }
@@ -24,11 +24,13 @@ pipeline {
         stage('Run SCA Analysis Using Snyk') {
             steps {
                 withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
-                    sh 'mvn snyk:test -fn'
+                    sh '''
+                    export SNYK_TOKEN=$SNYK_TOKEN
+                    mvn snyk:test -fn
+                    '''
                 }
             }
         }
 
     }
 }
-	
